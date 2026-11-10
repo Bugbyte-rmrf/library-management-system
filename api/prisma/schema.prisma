@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -17,6 +16,7 @@ model User {
   id        Int      @id @default(autoincrement())
   name      String
   email     String   @unique
+  password  String
   role      Role     @default(PATRON)
   reviews   Review[]
   createdAt DateTime @default(now())
@@ -34,8 +34,11 @@ model Book {
   title           String
   author          String
   isbn            String   @unique
+  description     String   @default("Description not provided.")
+  coverImage      String?
   totalCopies     Int      @default(1)
   availableCopies Int      @default(1)
+  createdAt       DateTime @default(now())
 
   genreId Int
   genre   Genre @relation(fields: [genreId], references: [id])
