@@ -1,5 +1,4 @@
-
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../src/generated/prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -24,28 +23,20 @@ async function main() {
     ),
   );
 
-  // 2. Get genre IDs dynamically from the database
+  // 2. Create a map of genre names to database IDs
   const genreMap = Object.fromEntries(
     genres.map((genre) => [genre.slug, genre.id]),
   );
 
-  // 3. Prepare books with meaningful descriptions
+  // 3. Book data
   const books = [
-    // FICTION
+    // Fiction
     {
-      title: 'The Hobbit',
-      author: 'J.R.R. Tolkien',
-      isbn: '9780547928227',
+      title: 'Things Fall Apart',
+      author: 'Chinua Achebe',
+      isbn: '9780385474542',
       description:
-        'Bilbo Baggins, a quiet hobbit, is unexpectedly drawn into an adventurous quest with a group of dwarves to reclaim their lost kingdom and treasure from the dragon Smaug. Along the journey, he discovers courage, friendship, and his own hidden strengths.',
-      genreId: genreMap.fiction,
-    },
-    {
-      title: 'Dune',
-      author: 'Frank Herbert',
-      isbn: '9780441172719',
-      description:
-        'Set in a distant future, Dune follows Paul Atreides as his family takes control of the desert planet Arrakis, the only source of a valuable substance known as spice. The story explores political conflict, environmental survival, religion, power, and destiny.',
+        'A novel about Okonkwo, a respected Igbo leader, and the changes brought to his community by colonialism.',
       genreId: genreMap.fiction,
     },
     {
@@ -53,7 +44,7 @@ async function main() {
       author: 'George Orwell',
       isbn: '9780451524935',
       description:
-        'In a totalitarian society ruled by the mysterious Big Brother, Winston Smith struggles against constant surveillance, propaganda, and the suppression of independent thought. This dystopian novel examines government control, truth, freedom, and individual resistance.',
+        'A dystopian novel about surveillance, totalitarianism, and the dangers of absolute political power.',
       genreId: genreMap.fiction,
     },
     {
@@ -61,11 +52,19 @@ async function main() {
       author: 'Jane Austen',
       isbn: '9780141439518',
       description:
-        'Elizabeth Bennet navigates family expectations, social class, relationships, and misunderstandings in nineteenth-century England. Her complicated relationship with the reserved Mr. Darcy explores how pride and prejudice can prevent people from understanding one another.',
+        'A classic novel exploring love, class, family, and social expectations in nineteenth-century England.',
+      genreId: genreMap.fiction,
+    },
+    {
+      title: 'The Great Gatsby',
+      author: 'F. Scott Fitzgerald',
+      isbn: '9780743273565',
+      description:
+        'A story of wealth, ambition, and the American Dream set during the Jazz Age.',
       genreId: genreMap.fiction,
     },
 
-    // SCIENCE
+    // Science
     {
       title: 'A Brief History of Time',
       author: 'Stephen Hawking',
@@ -75,45 +74,45 @@ async function main() {
       genreId: genreMap.science,
     },
     {
-      title: 'Cosmos',
-      author: 'Carl Sagan',
-      isbn: '9780345539434',
-      description:
-        'Carl Sagan takes readers on a journey through the universe, exploring astronomy, planetary science, the origins of life, and the history of scientific discovery. The book celebrates curiosity and explains humanity’s place in the vastness of space.',
-      genreId: genreMap.science,
-    },
-    {
       title: 'The Selfish Gene',
       author: 'Richard Dawkins',
       isbn: '9780198788607',
       description:
-        'Richard Dawkins presents an influential explanation of evolution through the perspective of genes and natural selection. He explores how genetic information influences behaviour, cooperation, competition, and the development of living organisms.',
+        'An exploration of evolution and natural selection from the perspective of genes.',
       genreId: genreMap.science,
     },
     {
-      title: 'Astrophysics for People in a Hurry',
-      author: 'Neil deGrasse Tyson',
-      isbn: '9780393609394',
+      title: 'Cosmos',
+      author: 'Carl Sagan',
+      isbn: '9780345539434',
       description:
-        'Neil deGrasse Tyson introduces essential concepts in astrophysics through short, approachable chapters. Readers explore the Big Bang, dark matter, black holes, galaxies, and the fundamental forces that shape the universe.',
+        'A journey through astronomy, science, and humanity’s place in the universe.',
+      genreId: genreMap.science,
+    },
+    {
+      title: 'The Origin of Species',
+      author: 'Charles Darwin',
+      isbn: '9781509827695',
+      description:
+        'Darwin’s foundational work explaining evolution through natural selection.',
       genreId: genreMap.science,
     },
 
-    // HISTORY
+    // History
     {
       title: 'Sapiens',
       author: 'Yuval Noah Harari',
       isbn: '9780062316097',
       description:
-        'Sapiens traces the development of humankind from early hunter-gatherer societies to modern civilizations. Yuval Noah Harari examines major transformations in human history, including agriculture, religion, money, empires, science, and technology.',
+        'A broad history of humankind, from early humans to modern societies.',
       genreId: genreMap.history,
     },
     {
-      title: 'The Silk Roads',
-      author: 'Peter Frankopan',
-      isbn: '9781101912379',
+      title: 'The Art of War',
+      author: 'Sun Tzu',
+      isbn: '9781590302255',
       description:
-        'Peter Frankopan presents a history of the world through the interconnected trade routes linking Asia, Europe, and the Middle East. The book explores how commerce, religion, migration, warfare, and cultural exchange shaped global civilization.',
+        'An ancient Chinese military text exploring strategy, leadership, and conflict.',
       genreId: genreMap.history,
     },
     {
@@ -121,7 +120,7 @@ async function main() {
       author: 'Jared Diamond',
       isbn: '9780393354324',
       description:
-        'Jared Diamond investigates why different human societies developed at different rates of technological and political power. He examines geography, agriculture, domestic animals, disease, and environmental conditions as major influences on the course of history.',
+        'An examination of the environmental and geographical factors that shaped human history.',
       genreId: genreMap.history,
     },
     {
@@ -129,73 +128,70 @@ async function main() {
       author: 'Anne Frank',
       isbn: '9780553296983',
       description:
-        'Anne Frank records her thoughts, fears, hopes, and everyday experiences while hiding with her family from Nazi persecution during the Second World War. Her diary offers a deeply personal account of life under oppression and the resilience of the human spirit.',
+        'The diary of Anne Frank, documenting her life in hiding during the Holocaust.',
       genreId: genreMap.history,
     },
 
-    // TECHNOLOGY
+    // Technology
     {
       title: 'Clean Code',
       author: 'Robert C. Martin',
       isbn: '9780132350884',
       description:
-        'Robert C. Martin explains principles and practical techniques for writing readable, maintainable, and reliable software. Through examples and programming guidelines, the book explores meaningful naming, functions, error handling, testing, and code organization.',
+        'A guide to writing readable, maintainable, and well-structured software.',
       genreId: genreMap.technology,
     },
     {
       title: 'The Pragmatic Programmer',
-      author: 'David Thomas',
+      author: 'Andrew Hunt and David Thomas',
       isbn: '9780135957059',
       description:
-        'This book presents practical advice for becoming a more effective and adaptable software developer. It covers problem-solving, automation, debugging, testing, software design, and professional habits that help programmers build dependable systems.',
+        'Practical advice and techniques for becoming a more effective software developer.',
+      genreId: genreMap.technology,
+    },
+    {
+      title: 'Code',
+      author: 'Charles Petzold',
+      isbn: '9780137909100',
+      description:
+        'An explanation of how computers work, from basic circuits to software.',
       genreId: genreMap.technology,
     },
     {
       title: 'Introduction to Algorithms',
-      author: 'Thomas H. Cormen',
+      author: 'Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, and Clifford Stein',
       isbn: '9780262046305',
       description:
-        'This comprehensive textbook introduces fundamental algorithms and the mathematical techniques used to analyze their efficiency. It covers sorting, searching, data structures, graph algorithms, optimization, and other essential topics in computer science.',
-      genreId: genreMap.technology,
-    },
-    {
-      title: 'Design Patterns',
-      author: 'Erich Gamma',
-      isbn: '9780201633610',
-      description:
-        'This classic software engineering book introduces reusable object-oriented design patterns for solving recurring software development problems. It explains patterns such as Factory Method, Observer, Adapter, and Singleton, helping developers create flexible and maintainable applications.',
+        'A comprehensive introduction to algorithms and their design and analysis.',
       genreId: genreMap.technology,
     },
   ];
 
-  // 4. Create new books or update existing books using ISBN
-  const results = await Promise.all(
-    books.map((book) =>
-      prisma.book.upsert({
-        where: { isbn: book.isbn },
-        update: {
-          title: book.title,
-          author: book.author,
-          description: book.description,
-          genreId: book.genreId,
-        },
-        create: book,
-      }),
-    ),
-  );
+  // 4. Create or update books using ISBN
+  for (const book of books) {
+    await prisma.book.upsert({
+      where: { isbn: book.isbn },
+      update: {
+        title: book.title,
+        author: book.author,
+        description: book.description,
+        genreId: book.genreId,
+      },
+      create: book,
+    });
+  }
 
-  // 5. Display seeding results
-  console.log(`Created or updated ${results.length} books.`);
+  console.log(`Created or updated ${books.length} books.`);
   console.log(`Processed ${genres.length} genres.`);
+
   console.log('Database seeding completed successfully!');
 }
 
 main()
   .catch((error) => {
-    console.error('Seeding failed:', error);
+    console.error('Error while seeding database:', error);
     process.exit(1);
   })
   .finally(async () => {
     await prisma.$disconnect();
   });
-
