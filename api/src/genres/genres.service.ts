@@ -1,0 +1,53 @@
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
+import { CreateGenreDto } from './dto/create-genre.dto';
+import { UpdateGenreDto } from './dto/update-genre.dto';
+
+@Injectable()
+export class GenresService {
+  constructor(private readonly prisma: PrismaService) {}
+
+  findAll() {
+    return this.prisma.genre.findMany({
+      orderBy: { name: 'asc' },
+      include: { _count: { select: { books: true } } },
+    });
+  }
+
+  async findOne(id: number) {
+    const genre = await this.prisma.genre.findUnique({
+      where: { id },
+      include: { books: true },
+    });
+    if (!genre) throw new NotFoundException(`Genre ${id} was not found`);
+    return genre;
+  }
+
+  async create(dto: CreateGenreDto) {
+    try {
+      return await this.prisma.genre.create({ data: dto });
+    } catch (error: unknown) {
+      if (this.isUniqueError(error)) throw new ConflictException('Genre name or slug already exists');
+      throw error;
+    }
+  }
+
+  async update(id: number, dto: UpdateGenreDto) {
+    await this.findOne(id);
+    try {
+      return await this.prisma.genre.update({ where: { id }, data: dto });
+    } catch (error: unknown) {
+      if (this.isUniqueError(error)) throw new ConflictException('Genre name or slug already exists');
+      throw error;
+    }
+  }
+
+  async remove(id: number) {
+    await this.findOne(id);
+    return this.prisma.genre.delete({ where: { id } });
+  }
+
+  private isUniqueError(error: unknown): boolean {
+    return !!error && typeof error === 'object' && 'code' in error && error.code === 'P2002';
+  }
+}

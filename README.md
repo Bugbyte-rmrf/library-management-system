@@ -660,3 +660,51 @@ It also demonstrates database migrations, seed scripts, foreign key relationship
 The initial database was successfully populated and verified using Prisma Studio, confirming four genres and sixteen books.
 
 This implementation provides a foundation for developing a complete library management backend.
+
+## 8.1 Authentication and Authorization
+
+- `POST /auth/register` creates a PATRON account and returns a JWT.
+- `POST /auth/login` verifies a bcrypt password and returns a JWT.
+- JWT bearer tokens are validated by `JwtStrategy` and `JwtAuthGuard`.
+- `RolesGuard` restricts librarian mutations to users whose JWT role is `LIBRARIAN`.
+- Public registration cannot select a librarian role.
+- Set `JWT_SECRET` in `api/.env` for local and production deployments.
+
+## 8.2 Catalog API Endpoints
+
+| Method | Endpoint | Access | Purpose |
+|---|---|---|---|
+| GET | `/genres` | Public | List genres |
+| GET | `/genres/:id` | Public | Read one genre and its books |
+| POST | `/genres` | Librarian | Create a genre |
+| PATCH | `/genres/:id` | Librarian | Update a genre |
+| DELETE | `/genres/:id` | Librarian | Delete a genre |
+| GET | `/books` | Public | Filter/search/paginate/sort books |
+| GET | `/books/:id` | Public | Read one book |
+| POST | `/books` | Librarian | Create a book |
+| PATCH | `/books/:id` | Librarian | Update a book |
+| DELETE | `/books/:id` | Librarian | Delete a book |
+
+Book list query parameters: `genreId`, `search`, `page`, `limit`, and `sort` (`title` or `author`).
+
+The API uses global `ValidationPipe` transformation/whitelisting and CORS for Vite development origins.
+
+## 8.3 Seed Librarian
+
+Set `SEED_LIBRARIAN_PASSWORD` in `api/.env`, then run:
+
+```bash
+cd api
+npm run prisma:seed
+```
+
+Without that variable, local seeding uses `ChangeMe123!`. Change it for any shared environment.
+
+Seeded account:
+
+- Email: `librarian@example.com`
+- Role: `LIBRARIAN`
+
+## 8.4 Postman Collection
+
+Import `postman/library-management-system.postman_collection.json`, set `baseUrl` to `http://localhost:3000`, login with the librarian account, and set the collection `token` variable before protected requests.
