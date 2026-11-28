@@ -299,6 +299,33 @@ a:focus-visible {
   font-weight: 700;
 }
 
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 28px;
+  color: #475467;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.pagination button {
+  min-width: 96px;
+  min-height: 40px;
+  border: 1px solid #d7deea;
+  border-radius: 8px;
+  background: #fff;
+  color: #315ecf;
+  cursor: pointer;
+  font-weight: 750;
+}
+
+.pagination button:disabled {
+  color: #98a2b3;
+  cursor: not-allowed;
+}
+
 @media (max-width: 950px) {
   .book-grid,
   .status-grid {
