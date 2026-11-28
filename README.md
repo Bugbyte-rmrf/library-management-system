@@ -698,7 +698,7 @@ cd api
 npm run prisma:seed
 ```
 
-Without that variable, local seeding uses `ChangeMe123!`. Change it for any shared environment.
+The seed command requires `SEED_LIBRARIAN_PASSWORD`; it does not use a default password.
 
 Seeded account:
 

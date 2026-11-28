@@ -1,19 +1,31 @@
 import * as bcrypt from 'bcrypt';
+import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../src/generated/prisma/client';
 
-const prisma = new PrismaClient();
+const connectionString = process.env.DATABASE_URL;
+if (!connectionString) {
+  throw new Error('DATABASE_URL is not set');
+}
+
+const prisma = new PrismaClient({
+  adapter: new PrismaPg({ connectionString }),
+});
 
 async function main() {
   console.log('Starting database seeding...');
 
-  const librarianPassword = process.env.SEED_LIBRARIAN_PASSWORD || 'ChangeMe123!';
+  const librarianPassword = process.env.SEED_LIBRARIAN_PASSWORD;
+  if (!librarianPassword) {
+    throw new Error('SEED_LIBRARIAN_PASSWORD is not set');
+  }
+  const librarianPasswordHash = await bcrypt.hash(librarianPassword, 12);
   await prisma.user.upsert({
     where: { email: 'librarian@example.com' },
-    update: { role: 'LIBRARIAN' },
+    update: { role: 'LIBRARIAN', password: librarianPasswordHash },
     create: {
       name: 'Library Librarian',
       email: 'librarian@example.com',
-      password: await bcrypt.hash(librarianPassword, 12),
+      password: librarianPasswordHash,
       role: 'LIBRARIAN',
     },
   });
